@@ -1,22 +1,21 @@
 from mss import mss
 from PIL import Image
 
-import time
-
 
 def screengrab(monitor=0, output="screenshot.png"):
     """ Uses MSS to capture a screenshot quickly. """
 
     sct = mss()
     monitors = sct.enum_display_monitors()
-    game_x = 600
-    game_y = 600
+    scale = 1
+    game_x = 300*scale
+    game_y = 300*scale
     mon_x = monitors[monitor]["left"]
     mon_y = monitors[monitor]["top"]
     size_x = monitors[monitor]["width"]
     size_y = monitors[monitor]["height"]
     x = int(mon_x + (size_x - game_x)/2)
-    y = int(mon_y + 140 + (game_x//2))
+    y = int(mon_y + 220*scale)
     mon = {'top': y, 'left': x, 'width': game_x, 'height': game_y}
     sct.to_png(data=sct.get_pixels(mon), output=output)
 
@@ -27,10 +26,12 @@ def findheart(image="screenshot.png"):
     image_data = Image.open(image)
     width = image_data.size[0]
     heart = list()
+    arrow_blue = (0, 255, 0)
+    arrow_yellow = (255, 223, 25)
     for count, i in enumerate(image_data.getdata()):
         if i == (0, 0, 0):
             continue
-        elif i == (0, 255, 0):
+        elif i == arrow_blue or i == arrow_yellow:
             x = count % width
             y = int(count/width)
             heart.append([x, y])
@@ -43,6 +44,10 @@ def findheart(image="screenshot.png"):
 
     return cx, cy
 
+
+def monitors():
+    m = mss()
+    return(m.enum_display_monitors())
 
 def getsize(image="screenshot.png"):
     """ Returns the size of the image. """
